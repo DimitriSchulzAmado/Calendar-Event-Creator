@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 
-@app.route("/notion-webhook", methods=["POST"])
+@app.route("/notion-webhook/", methods=["POST"])
 def receive_notion_webhook():
     if request.method == "POST":
         data = request.json
