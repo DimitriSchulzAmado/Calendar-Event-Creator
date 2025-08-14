@@ -75,9 +75,25 @@ class GoogleCalendar:
             }
 
             calendars = service.calendarList().list().execute()
+            calendar_found = False
             for calendar in calendars["items"]:
                 print(calendar["id"], calendar["summary"])
-            event = service.events().insert(calendarId=type, body=event).execute()
+                if type in calendar["summary"] or type == calendar["id"]:
+                    event = (
+                        service.events()
+                        .insert(calendarId=calendar["id"], body=event)
+                        .execute()
+                    )
+                    calendar_found = True
+                    break
+
+            if not calendar_found:
+                print(
+                    f"Calendar '{type}' not found. Creating event in primary calendar."
+                )
+                event = (
+                    service.events().insert(calendarId="primary", body=event).execute()
+                )
             # print(f"Event created: {event.get('htmlLink')}")
 
         except HttpError as error:
