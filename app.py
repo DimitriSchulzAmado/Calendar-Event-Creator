@@ -1,4 +1,3 @@
-import requests
 from google_calendar.google_calendar_service import GoogleCalendar
 from flask import Flask, request, jsonify
 
@@ -9,6 +8,7 @@ app = Flask(__name__)
 def receive_notion_webhook():
     if request.method == "POST":
         response = request.get_json()
+        print(response)
         properties = response["data"]["properties"]
 
         GoogleCalendar.create_event(
@@ -17,6 +17,8 @@ def receive_notion_webhook():
             description=properties["Description"]["rich_text"][0]["text"]["content"],
             start_time=properties["Date"]["date"]["start"],
             end_time=properties["Date"]["date"]["end"],
+            remind=properties["Remind"]["number"],
+            type=properties["Type"]["select"]["name"],
         )
 
         return jsonify({"status": "success", "message": "Webhook received"})
