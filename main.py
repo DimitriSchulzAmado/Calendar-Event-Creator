@@ -14,7 +14,7 @@ def receive_notion_webhook():
         GoogleCalendar.create_event(
             summary=properties["Name"]["title"][0]["text"]["content"],
             location=properties["Place"]["rich_text"][0]["text"]["content"],
-            description="None",
+            description=properties["Description"]["rich_text"][0]["text"]["content"],
             start_time=properties["Date"]["date"]["start"],
             end_time=properties["Date"]["date"]["end"],
         )
