@@ -77,7 +77,7 @@ class GoogleCalendar:
             calendars = service.calendarList().list().execute()
             for calendar in calendars["items"]:
                 print(calendar["id"], calendar["summary"])
-            event = service.events().insert(calendarId="primary", body=event).execute()
+            event = service.events().insert(calendarId=type, body=event).execute()
             # print(f"Event created: {event.get('htmlLink')}")
 
         except HttpError as error:
