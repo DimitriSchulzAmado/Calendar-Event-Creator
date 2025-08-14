@@ -19,7 +19,13 @@ class GoogleCalendar:
 
     @staticmethod
     def create_event(
-        summary: str, location: str, description: str, start_time, end_time
+        summary: str,
+        location: str,
+        description: str,
+        start_time: str,
+        end_time: str,
+        remind: int,
+        type: str,
     ):
         creds = None
         credentials_json = os.getenv("GOOGLE_CALENDAR_CREDENTIALS")
@@ -63,11 +69,14 @@ class GoogleCalendar:
                 "reminders": {
                     "useDefault": False,
                     "overrides": [
-                        {"method": "popup", "minutes": 5},
+                        {"method": "popup", "minutes": remind},
                     ],
                 },
             }
 
+            calendars = service.calendarList().list().execute()
+            for calendar in calendars["items"]:
+                print(calendar["id"], calendar["summary"])
             event = service.events().insert(calendarId="primary", body=event).execute()
             # print(f"Event created: {event.get('htmlLink')}")
 
