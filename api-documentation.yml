@@ -1,0 +1,206 @@
+openapi: 3.0.0
+info:
+	title: Calendar Event Creator API
+	version: 1.0.0
+	description: API para criar eventos no Google Calendar via webhook do Notion.
+servers:
+	- url: http://localhost:5000
+paths:
+	/notion-webhook:
+		post:
+			summary: Recebe dados do Notion para criar evento no Google Calendar
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							type: object
+							properties:
+								source:
+									type: object
+									properties:
+										type:
+											type: string
+										automation_id:
+											type: string
+										action_id:
+											type: string
+										event_id:
+											type: string
+										attempt:
+											type: integer
+								data:
+									type: object
+									properties:
+										object:
+											type: string
+										id:
+											type: string
+										created_time:
+											type: string
+											format: date-time
+										last_edited_time:
+											type: string
+											format: date-time
+										created_by:
+											type: object
+											properties:
+												object:
+													type: string
+												id:
+													type: string
+										last_edited_by:
+											type: object
+											properties:
+												object:
+													type: string
+												id:
+													type: string
+										cover:
+											nullable: true
+										icon:
+											nullable: true
+										parent:
+											type: object
+											properties:
+												type:
+													type: string
+												database_id:
+													type: string
+										archived:
+											type: boolean
+										in_trash:
+											type: boolean
+										properties:
+											type: object
+											properties:
+												Place:
+													type: object
+													properties:
+														id:
+															type: string
+														type:
+															type: string
+														rich_text:
+															type: array
+															items:
+																type: object
+																properties:
+																	type:
+																		type: string
+																	text:
+																		type: object
+																		properties:
+																			content:
+																				type: string
+																			link:
+																				nullable: true
+																	annotations:
+																		type: object
+																	plain_text:
+																		type: string
+																	href:
+																		nullable: true
+												People:
+													type: object
+													properties:
+														id:
+															type: string
+														type:
+															type: string
+														rich_text:
+															type: array
+															items:
+																type: object
+																properties:
+																	type:
+																		type: string
+																	text:
+																		type: object
+																		properties:
+																			content:
+																				type: string
+																			link:
+																				nullable: true
+																	annotations:
+																		type: object
+																	plain_text:
+																		type: string
+																	href:
+																		nullable: true
+												Date:
+													type: object
+													properties:
+														id:
+															type: string
+														type:
+															type: string
+														date:
+															type: object
+															properties:
+																start:
+																	type: string
+																end:
+																	type: string
+																time_zone:
+																	nullable: true
+												Name:
+													type: object
+													properties:
+														id:
+															type: string
+														type:
+															type: string
+														title:
+															type: array
+															items:
+																type: object
+																properties:
+																	type:
+																		type: string
+																	text:
+																		type: object
+																		properties:
+																			content:
+																				type: string
+																			link:
+																				nullable: true
+																	annotations:
+																		type: object
+																	plain_text:
+																		type: string
+																	href:
+																		nullable: true
+												Cancel Event:
+													type: object
+													properties:
+														id:
+															type: string
+														type:
+															type: string
+														checkbox:
+															type: boolean
+										url:
+											type: string
+										public_url:
+											nullable: true
+										request_id:
+											type: string
+			responses:
+				'201':
+					description: Evento criado com sucesso
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									id:
+										type: string
+										description: ID do evento
+									htmlLink:
+										type: string
+										description: Link para o evento no Google Calendar
+				'400':
+					description: Requisição inválida
+				'500':
+					description: Erro interno do servidor
