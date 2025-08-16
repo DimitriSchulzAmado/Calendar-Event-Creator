@@ -75,26 +75,56 @@ class GoogleCalendar:
             }
 
             calendars = service.calendarList().list().execute()
-            calendar_found = False
-            for calendar in calendars["items"]:
-                print(calendar["id"], calendar["summary"])
-                if type in calendar["summary"]:
-                    event = (
-                        service.events()
-                        .insert(calendarId=calendar["id"], body=event)
-                        .execute()
-                    )
-                    calendar_found = True
+            # Procura calendarId cujo summary contém o valor de `type` (case-insensitive)
+            calendar_id = None
+            for calendar in calendars.get("items", []):
+                summary = calendar.get("summary", "") or ""
+                if type and type.lower() in summary.lower():
+                    calendar_id = calendar.get("id")
                     break
 
-            if not calendar_found:
+            if not calendar_id:
                 print(
-                    f"Calendar '{type}' not found. Creating event in primary calendar."
+                    f"Calendar '{type}' not found in calendar list. Falling back to 'primary'."
                 )
+                calendar_id = "primary"
+
+            try:
+                service.calendarList().get(calendarId=calendar_id).execute()
+            except HttpError as e:
+                try:
+                    err = json.loads(e.content.decode())
+                except Exception:
+                    err = {"error": {"message": str(e)}}
+                print("Unable to access chosen calendar:", err)
+                if calendar_id != "primary":
+                    print("Falling back to primary calendar and retrying insert.")
+                    calendar_id = "primary"
+
+            try:
                 event = (
-                    service.events().insert(calendarId="primary", body=event).execute()
+                    service.events()
+                    .insert(calendarId=calendar_id, body=event)
+                    .execute()
                 )
-            # print(f"Event created: {event.get('htmlLink')}")
+            except HttpError as e:
+                try:
+                    err_json = json.loads(e.content.decode())
+                except Exception:
+                    err_json = {"error": {"message": str(e)}}
+                print(
+                    "Failed to create event. API response:",
+                    json.dumps(err_json, ensure_ascii=False),
+                )
+
+                if err_json.get("error", {}).get("code") == 403:
+                    print(
+                        "Permission denied. Possible causes:\n"
+                        " - The OAuth client is not authorized for this calendar.\n"
+                        " - The calendar belongs to another user and wasn't shared with the authenticated account.\n"
+                        " - You might be using an API key instead of OAuth credentials. Make sure you're authenticating with OAuth and the token has the correct scopes."
+                    )
+                raise
 
         except HttpError as error:
             print("An error occurred:", error)
