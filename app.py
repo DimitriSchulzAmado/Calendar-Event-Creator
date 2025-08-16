@@ -5,6 +5,13 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 
+@app.route("/")
+def index():
+    return jsonify(
+        {"status": "success", "message": "Welcome to the Calendar Event Creator!"}
+    )
+
+
 @app.route("/notion-webhook/", methods=["POST"])
 def receive_notion_webhook():
     if request.method == "POST":
