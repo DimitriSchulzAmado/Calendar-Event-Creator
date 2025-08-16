@@ -1,3 +1,4 @@
+import os
 from google_calendar.google_calendar_service import GoogleCalendar
 from flask import Flask, request, jsonify
 
@@ -27,4 +28,5 @@ def receive_notion_webhook():
 
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
