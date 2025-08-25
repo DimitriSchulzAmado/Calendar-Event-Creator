@@ -32,20 +32,18 @@ class GoogleCalendar:
         token_json = os.getenv("GOOGLE_TOKEN")
 
         if token_json:
-            creds = Credentials.from_authorized_user_info(
+            creds = Credentials.from_authorized_user_file(
                 json.loads(token_json), SCOPES
             )
 
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
-                # Atualiza o token na variável de ambiente, se necessário
             else:
                 if credentials_json:
                     creds_info = json.loads(credentials_json)
-                    flow = InstalledAppFlow.from_client_config(creds_info, SCOPES)
+                    flow = InstalledAppFlow.from_client_secrets_file(creds_info, SCOPES)
                     creds = flow.run_local_server(port=0)
-                    # Após autenticação, salve o token manualmente no .env para uso futuro
                 else:
                     raise Exception(
                         "Credenciais do Google Calendar não encontradas nas variáveis de ambiente."
