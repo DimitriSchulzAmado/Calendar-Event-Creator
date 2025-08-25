@@ -16,7 +16,6 @@ def index():
 def receive_notion_webhook():
     if request.method == "POST":
         response = request.get_json()
-        print(response)
         properties = response["data"]["properties"]
 
         GoogleCalendar.create_event(
