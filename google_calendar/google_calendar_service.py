@@ -98,6 +98,7 @@ class GoogleCalendar:
             }
 
             calendars = service.calendarList().list().execute()
+            print(calendars)
             calendar_id = None
             for calendar in calendars.get("items", []):
                 summary = calendar.get("summary", "") or ""
