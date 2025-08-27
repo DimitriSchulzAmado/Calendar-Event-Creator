@@ -18,45 +18,27 @@ class GoogleCalendar:
     def __init__(self):
         pass
 
-    # @staticmethod
-    # def get_credentials(credentials=None, token=None):
-    #     creds = None
-
-    #     if token:
-    #         creds = Credentials.from_authorized_user_info(json.loads(token), SCOPES)
-
-    #     if not creds or not creds.valid:
-    #         if creds and creds.expired and creds.refresh_token:
-    #             creds.refresh(Request())
-    #             # Atualiza o token na variável de ambiente, se necessário
-    #         else:
-    #             if credentials:
-    #                 creds_info = json.loads(credentials)
-    #                 flow = InstalledAppFlow.from_client_config(creds_info, SCOPES)
-    #                 creds = flow.run_local_server(port=0)
-    #                 # Após autenticação, salve o token manualmente no .env para uso futuro
-    #             else:
-    #                 raise Exception(
-    #                     "Credenciais do Google Calendar não encontradas nas variáveis de ambiente."
-    #                 )
-    #     return creds
-
     @staticmethod
-    def get_credentials(credentials=None):
+    def get_credentials(credentials=None, token=None):
         creds = None
-        if credentials:
-            try:
-                service_account_info = json.loads(credentials)
-                creds = service_account.Credentials.from_service_account_info(
-                    service_account_info, scopes=SCOPES
-                )
-            except Exception as e:
-                raise Exception(f"Failed to load service account credentials: {e}")
-        else:
-            raise Exception(
-                "Service Account credentials not found in environment variables."
-            )
 
+        if token:
+            creds = Credentials.from_authorized_user_info(json.loads(token), SCOPES)
+
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+                # Atualiza o token na variável de ambiente, se necessário
+            else:
+                if credentials:
+                    creds_info = json.loads(credentials)
+                    flow = InstalledAppFlow.from_client_config(creds_info, SCOPES)
+                    creds = flow.run_local_server(port=0)
+                    # Após autenticação, salve o token manualmente no .env para uso futuro
+                else:
+                    raise Exception(
+                        "Credenciais do Google Calendar não encontradas nas variáveis de ambiente."
+                    )
         return creds
 
     @staticmethod
