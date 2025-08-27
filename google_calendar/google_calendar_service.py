@@ -53,7 +53,7 @@ class GoogleCalendar:
     ):
         creds = GoogleCalendar.get_credentials(
             credentials=os.getenv("GOOGLE_CALENDAR_CREDENTIALS"),
-            # token=os.getenv("GOOGLE_TOKEN"),
+            token=os.getenv("GOOGLE_TOKEN"),
         )
 
         try:
